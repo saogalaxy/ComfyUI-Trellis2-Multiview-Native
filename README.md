@@ -43,6 +43,14 @@ shift `3.0` before the texture KSampler — then 12 steps / 6.5 / 3.0
 match bruno's defaults. Without the shift nodes everything reads
 soft no matter the step count.
 
+### Trellis2 CFG Interval + Rescale (`Trellis2CFGInterval`)
+
+Native port of the last bruno sampler delta: per-step CFG runs only
+inside `[start, end]` (pure conditional outside — bruno's
+`guidance_strength=1` fallback) with his x0-std rescale
+(`guidance_rescale`, 0.2 on every stage). Use one instance at
+0.1-1.0 for structure/shape and one at 0.0-0.9 for texture.
+
 ### Trellis2 MeshWithVoxel to Native Bridge (`MeshWithVoxelToNativeBridge`)
 
 Converts visualbruno `ComfyUI-Trellis2` MESHWITHVOXEL to native ComfyUI

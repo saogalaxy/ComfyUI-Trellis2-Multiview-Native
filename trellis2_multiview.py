@@ -763,10 +763,89 @@ def _mv_blend_dense(outs, shape, views, axis, temp):
     return (stacked * w.unsqueeze(1)).sum(dim=0)
 
 
+class Trellis2CFGInterval(IO.ComfyNode):
+    """Native port of visualbruno's guidance-interval + guidance-rescale.
+
+    Per step, with sigma read as Bruno's rescaled t (so use together with
+    the matching ModelSamplingSD3 shift):
+    - inside [start, end]: standard CFG `uncond + cfg*(cond-uncond)`, then
+      Bruno's x0 rescale `r*rescaled + (1-r)*cfg` when `rescale > 0`
+      (identical math to core RescaleCFG's flow branch, kept here so both
+      live in one hook slot).
+    - outside: guidance 1.0, pure conditional (matches Bruno's mixin).
+
+    Defaults mirror Bruno's generator widgets: structure/shape
+    0.1-1.0 / 0.2, texture 0.0-0.9 / 0.2. Pure torch, no extra deps.
+    """
+
+    @classmethod
+    def define_schema(cls):
+        return IO.Schema(
+            node_id="Trellis2CFGInterval",
+            display_name="Trellis2 CFG Interval + Rescale",
+            category="model/conditioning/trellis",
+            inputs=[
+                IO.Model.Input("model"),
+                IO.Float.Input(
+                    "interval_start", default=0.1, min=0.0, max=1.0,
+                    step=0.01,
+                ),
+                IO.Float.Input(
+                    "interval_end", default=1.0, min=0.0, max=1.0,
+                    step=0.01,
+                ),
+                IO.Float.Input(
+                    "guidance_rescale", default=0.2, min=0.0, max=1.0,
+                    step=0.01,
+                    tooltip="Bruno guidance_rescale (0.2 on every stage).",
+                ),
+            ],
+            outputs=[IO.Model.Output()],
+        )
+
+    @classmethod
+    def execute(cls, model, interval_start=0.1, interval_end=1.0,
+                guidance_rescale=0.2) -> IO.NodeOutput:
+        start = float(interval_start)
+        end = float(interval_end)
+        rescale = float(guidance_rescale)
+
+        def _cfg_fn(args):
+            sig = args["sigma"]
+            try:
+                t = float(sig.reshape(-1)[0].detach().cpu().item())
+            except Exception:
+                t = float(sig)
+            res_c = args["cond"]
+            res_u = args["uncond"]
+            if not (start <= t <= end):
+                return res_c
+            cond_scale = args["cond_scale"]
+            if rescale > 0:
+                x = args["input"]
+                d_c = args["cond_denoised"]
+                d_u = args["uncond_denoised"]
+                d_cfg = d_u + cond_scale * (d_c - d_u)
+                dims = tuple(range(1, d_c.ndim))
+                std_p = d_c.std(dim=dims, keepdim=True)
+                std_g = d_cfg.std(dim=dims, keepdim=True).clamp(min=1e-8)
+                d_rs = d_cfg * (std_p / std_g)
+                return x - (rescale * d_rs + (1.0 - rescale) * d_cfg)
+            return res_u + cond_scale * (res_c - res_u)
+
+        patched = model.clone()
+        patched.set_model_sampler_cfg_function(_cfg_fn)
+        logging.info(
+            "Trellis2CFGInterval: [%.2f, %.2f] rescale=%.2f.",
+            start, end, rescale,
+        )
+        return IO.NodeOutput(patched)
+
+
 class Trellis2MultiviewExtension(ComfyExtension):
     @override
     async def get_node_list(self) -> list[type[IO.ComfyNode]]:
-        return [Trellis2MultiViewConditioning, MeshWithVoxelToNativeBridge, NativeMeshVoxelToMeshWithVoxel, Trellis2SpatialMultiViewPatch]
+        return [Trellis2MultiViewConditioning, MeshWithVoxelToNativeBridge, NativeMeshVoxelToMeshWithVoxel, Trellis2SpatialMultiViewPatch, Trellis2CFGInterval]
 
 
 async def comfy_entrypoint() -> Trellis2MultiviewExtension:

@@ -1,8 +1,8 @@
 {
   "id": "a48625d5-51bb-4113-81a8-691e1cd44bb4",
   "revision": 0,
-  "last_node_id": 940,
-  "last_link_id": 2769,
+  "last_node_id": 943,
+  "last_link_id": 2773,
   "nodes": [
     {
       "id": 1,
@@ -317,7 +317,7 @@
         300
       ],
       "flags": {},
-      "order": 12,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
@@ -387,7 +387,7 @@
         100
       ],
       "flags": {},
-      "order": 13,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
@@ -435,7 +435,7 @@
         100
       ],
       "flags": {},
-      "order": 14,
+      "order": 16,
       "mode": 0,
       "inputs": [
         {
@@ -497,7 +497,7 @@
         300
       ],
       "flags": {},
-      "order": 15,
+      "order": 17,
       "mode": 0,
       "inputs": [
         {
@@ -567,7 +567,7 @@
         140
       ],
       "flags": {},
-      "order": 16,
+      "order": 18,
       "mode": 0,
       "inputs": [
         {
@@ -641,7 +641,7 @@
         300
       ],
       "flags": {},
-      "order": 17,
+      "order": 19,
       "mode": 0,
       "inputs": [
         {
@@ -712,7 +712,7 @@
         110
       ],
       "flags": {},
-      "order": 18,
+      "order": 20,
       "mode": 0,
       "inputs": [
         {
@@ -732,7 +732,7 @@
           "type": "MESH",
           "links": [
             32,
-            2741
+            2770
           ]
         },
         {
@@ -761,7 +761,7 @@
         100
       ],
       "flags": {},
-      "order": 19,
+      "order": 21,
       "mode": 0,
       "inputs": [
         {
@@ -821,7 +821,7 @@
         300
       ],
       "flags": {},
-      "order": 22,
+      "order": 24,
       "mode": 0,
       "inputs": [
         {
@@ -891,7 +891,7 @@
         120
       ],
       "flags": {},
-      "order": 25,
+      "order": 27,
       "mode": 0,
       "inputs": [
         {
@@ -964,8 +964,8 @@
         190
       ],
       "flags": {},
-      "order": 20,
-      "mode": 4,
+      "order": 22,
+      "mode": 0,
       "inputs": [
         {
           "name": "mesh",
@@ -1013,7 +1013,7 @@
         190
       ],
       "flags": {},
-      "order": 23,
+      "order": 25,
       "mode": 0,
       "inputs": [
         {
@@ -1074,7 +1074,7 @@
         330
       ],
       "flags": {},
-      "order": 26,
+      "order": 28,
       "mode": 0,
       "inputs": [
         {
@@ -1170,7 +1170,7 @@
         520
       ],
       "flags": {},
-      "order": 27,
+      "order": 30,
       "mode": 0,
       "inputs": [
         {
@@ -1252,7 +1252,7 @@
         40
       ],
       "flags": {},
-      "order": 28,
+      "order": 31,
       "mode": 0,
       "inputs": [
         {
@@ -1289,7 +1289,7 @@
         230
       ],
       "flags": {},
-      "order": 30,
+      "order": 33,
       "mode": 0,
       "inputs": [
         {
@@ -1334,15 +1334,15 @@
       "id": 37,
       "type": "Save3DAdvanced",
       "pos": [
-        3475,
+        3477.955413019616,
         647
       ],
       "size": [
-        560,
-        700
+        557.0444858827428,
+        850.7258871164066
       ],
       "flags": {},
-      "order": 32,
+      "order": 35,
       "mode": 0,
       "inputs": [
         {
@@ -1401,9 +1401,9 @@
           "hasCustomUp": false,
           "state": {
             "position": {
-              "x": 4.062454099545991,
-              "y": 5.322049401306722,
-              "z": 5.674382510480261
+              "x": -4.309610105423982,
+              "y": 2.4683370450264372,
+              "z": 5.536239382644623
             },
             "target": {
               "x": 0,
@@ -1413,10 +1413,10 @@
             "zoom": 1,
             "cameraType": "perspective",
             "quaternion": {
-              "x": -0.18181730223011486,
-              "y": 0.30006966866346396,
-              "z": 0.058375093744431464,
-              "w": 0.934608480053702
+              "x": 0.002134213307039779,
+              "y": -0.3247296019001794,
+              "z": 0.0007327544475205217,
+              "w": 0.9458042048194915
             },
             "fov": 35,
             "aspect": 1,
@@ -1430,7 +1430,7 @@
             }
           }
         },
-        "Last Time Model File": "3d/PixelArtistry_watertight_00013.glb",
+        "Last Time Model File": "3d/PixelArtistry_watertight_00018.glb",
         "Scene Config": {
           "showGrid": false,
           "backgroundColor": "#282828",
@@ -1439,9 +1439,9 @@
           "models": [
             {
               "position": {
-                "x": 0.025748039333790662,
-                "y": 2.4996125306990606,
-                "z": -0.0405759879095865
+                "x": -0.031081032973755307,
+                "y": 2.5001407903523902,
+                "z": 0.1989991636517291
               },
               "quaternion": {
                 "x": 0,
@@ -1450,9 +1450,9 @@
                 "w": 1
               },
               "scale": {
-                "x": 5.001466555280608,
-                "y": 5.001466555280608,
-                "z": 5.001466555280608
+                "x": 4.9938058198028745,
+                "y": 4.9938058198028745,
+                "z": 4.9938058198028745
               }
             }
           ]
@@ -1468,15 +1468,15 @@
         },
         "Model Config": {
           "upDirection": "original",
-          "materialMode": "original",
+          "materialMode": "normal",
           "showSkeleton": false,
           "gizmo": {
             "enabled": false,
             "mode": "translate",
             "position": {
-              "x": 0.025748039333790662,
-              "y": 2.4996125306990606,
-              "z": -0.0405759879095865
+              "x": -0.031081032973755307,
+              "y": 2.5001407903523902,
+              "z": 0.1989991636517291
             },
             "rotation": {
               "x": 0,
@@ -1484,9 +1484,9 @@
               "z": 0
             },
             "scale": {
-              "x": 5.001466555280608,
-              "y": 5.001466555280608,
-              "z": 5.001466555280608
+              "x": 4.9938058198028745,
+              "y": 4.9938058198028745,
+              "z": 4.9938058198028745
             }
           }
         }
@@ -1516,7 +1516,7 @@
         180
       ],
       "flags": {},
-      "order": 29,
+      "order": 32,
       "mode": 0,
       "inputs": [
         {
@@ -1566,7 +1566,7 @@
         140
       ],
       "flags": {},
-      "order": 31,
+      "order": 34,
       "mode": 0,
       "inputs": [
         {
@@ -1634,7 +1634,7 @@
         190
       ],
       "flags": {},
-      "order": 33,
+      "order": 36,
       "mode": 0,
       "inputs": [
         {
@@ -1700,7 +1700,7 @@
         40
       ],
       "flags": {},
-      "order": 34,
+      "order": 37,
       "mode": 0,
       "inputs": [
         {
@@ -1733,11 +1733,11 @@
         415
       ],
       "size": [
-        560,
-        700
+        893.9615701189908,
+        1158.0889313485404
       ],
       "flags": {},
-      "order": 35,
+      "order": 38,
       "mode": 0,
       "inputs": [
         {
@@ -1796,9 +1796,9 @@
           "hasCustomUp": false,
           "state": {
             "position": {
-              "x": 1.4767165189669007,
-              "y": 5.081621487760987,
-              "z": 9.262682823097808
+              "x": -3.739261158026994,
+              "y": 3.0137737289872404,
+              "z": 8.96642162806562
             },
             "target": {
               "x": 0,
@@ -1808,10 +1808,10 @@
             "zoom": 1,
             "cameraType": "perspective",
             "quaternion": {
-              "x": -0.1334715168126116,
-              "y": 0.07825469855746832,
-              "z": 0.010572684795460514,
-              "w": 0.9879017029490517
+              "x": -0.0259011880361277,
+              "y": -0.19619915202525684,
+              "z": -0.005184399656592424,
+              "w": 0.9802082142091485
             },
             "fov": 35,
             "aspect": 1,
@@ -1825,7 +1825,7 @@
             }
           }
         },
-        "Last Time Model File": "3d/PixelArtistry_highpoly_00033.glb",
+        "Last Time Model File": "3d/PixelArtistry_highpoly_00043.glb",
         "Scene Config": {
           "showGrid": false,
           "backgroundColor": "#282828",
@@ -1903,8 +1903,8 @@
       "id": 929,
       "type": "39b80b9e-5f17-4be7-bcf0-cfbfec4d48ca",
       "pos": [
-        -1344.0559638824516,
-        723.5769557548481
+        -1333.9630295896568,
+        725.5955426134071
       ],
       "size": [
         309.78125,
@@ -2021,7 +2021,7 @@
       },
       "widgets_values": [
         1,
-        false,
+        true,
         "D:\\ComfyUI-Easy-Install\\ComfyUI-Easy-Install\\ComfyUI\\output\\Output-Desktop\\1ma\\ComfyUI-45_right",
         "D:\\ComfyUI-Easy-Install\\ComfyUI-Easy-Install\\ComfyUI\\output\\Output-Desktop\\1ma\\front",
         "D:\\ComfyUI-Easy-Install\\ComfyUI-Easy-Install\\ComfyUI\\output\\Output-Desktop\\1ma\\ComfyUI-back",
@@ -2030,7 +2030,7 @@
       ],
       "widgets_values_named": {
         "selection_setting": 1,
-        "switch": false,
+        "switch": true,
         "filename_prefix": "D:\\ComfyUI-Easy-Install\\ComfyUI-Easy-Install\\ComfyUI\\output\\Output-Desktop\\1ma\\ComfyUI-45_right",
         "filename_prefix_1": "D:\\ComfyUI-Easy-Install\\ComfyUI-Easy-Install\\ComfyUI\\output\\Output-Desktop\\1ma\\front",
         "filename_prefix_2": "D:\\ComfyUI-Easy-Install\\ComfyUI-Easy-Install\\ComfyUI\\output\\Output-Desktop\\1ma\\ComfyUI-back",
@@ -2095,13 +2095,13 @@
         40
       ],
       "flags": {},
-      "order": 21,
+      "order": 26,
       "mode": 0,
       "inputs": [
         {
           "name": "mesh",
           "type": "MESH",
-          "link": 2741
+          "link": 2771
         }
       ],
       "outputs": [
@@ -2132,7 +2132,7 @@
         700
       ],
       "flags": {},
-      "order": 24,
+      "order": 29,
       "mode": 0,
       "inputs": [
         {
@@ -2191,22 +2191,22 @@
           "hasCustomUp": false,
           "state": {
             "position": {
-              "x": -11.736721495778818,
-              "y": 6.679382620732617,
-              "z": 7.742379522907261
+              "x": -1.1723643715544743,
+              "y": 3.3983094318154516,
+              "z": 4.910456225506816
             },
             "target": {
-              "x": 0,
-              "y": 2.5,
-              "z": 0
+              "x": 0.3051016684696848,
+              "y": 3.5056943422471902,
+              "z": -0.33196890077787666
             },
             "zoom": 1,
             "cameraType": "perspective",
             "quaternion": {
-              "x": -0.12676190068309515,
-              "y": -0.46906083843208474,
-              "z": -0.06823756482553418,
-              "w": 0.8713535362476472
+              "x": 0.009763633369344007,
+              "y": -0.13691372785326497,
+              "z": 0.0013495503701653091,
+              "w": 0.9905339374814723
             },
             "fov": 35,
             "aspect": 1,
@@ -2220,7 +2220,7 @@
             }
           }
         },
-        "Last Time Model File": "3d/PixelArtistry_highpoly_00032.glb",
+        "Last Time Model File": "3d/PixelArtistry_highpoly_00042.glb",
         "Scene Config": {
           "showGrid": false,
           "backgroundColor": "#282828",
@@ -2229,9 +2229,9 @@
           "models": [
             {
               "position": {
-                "x": 0.02583540600028139,
-                "y": 2.499784188273673,
-                "z": -0.04058691250921076
+                "x": 0.07011385899449929,
+                "y": 2.5001454579445315,
+                "z": -0.0014624037712237525
               },
               "quaternion": {
                 "x": 0,
@@ -2240,9 +2240,9 @@
                 "w": 1
               },
               "scale": {
-                "x": 5.000994403203075,
-                "y": 5.000994403203075,
-                "z": 5.000994403203075
+                "x": 5.00077736540848,
+                "y": 5.00077736540848,
+                "z": 5.00077736540848
               }
             }
           ]
@@ -2258,15 +2258,15 @@
         },
         "Model Config": {
           "upDirection": "original",
-          "materialMode": "original",
+          "materialMode": "normal",
           "showSkeleton": false,
           "gizmo": {
             "enabled": false,
             "mode": "translate",
             "position": {
-              "x": 0.02583540600028139,
-              "y": 2.499784188273673,
-              "z": -0.04058691250921076
+              "x": 0.07011385899449929,
+              "y": 2.5001454579445315,
+              "z": -0.0014624037712237525
             },
             "rotation": {
               "x": 0,
@@ -2274,9 +2274,9 @@
               "z": 0
             },
             "scale": {
-              "x": 5.000994403203075,
-              "y": 5.000994403203075,
-              "z": 5.000994403203075
+              "x": 5.00077736540848,
+              "y": 5.00077736540848,
+              "z": 5.00077736540848
             }
           }
         }
@@ -2501,15 +2501,15 @@
       },
       "widgets_values": [
         true,
-        false,
         true,
-        false
+        true,
+        true
       ],
       "widgets_values_named": {
         "value": true,
-        "value_1": false,
+        "value_1": true,
         "value_2": true,
-        "value_3": false
+        "value_3": true
       }
     },
     {
@@ -2520,11 +2520,11 @@
         640
       ],
       "size": [
-        320,
+        335.7798828125,
         100
       ],
       "flags": {},
-      "order": 11,
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
@@ -2538,22 +2538,21 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            10,
-            14,
-            18
+            2772
           ]
         }
       ],
       "title": "Shift 4.0 (structure + shape, bruno rescale_t)",
       "properties": {
         "cnr_id": "comfy-core",
+        "ver": "0.38.2",
         "Node name for S&R": "ModelSamplingSD3"
       },
       "widgets_values": [
-        4.0
+        4
       ],
       "widgets_values_named": {
-        "shift": 4.0
+        "shift": 4
       }
     },
     {
@@ -2568,7 +2567,7 @@
         100
       ],
       "flags": {},
-      "order": 11,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
@@ -2582,20 +2581,164 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            24
+            2773
           ]
         }
       ],
       "title": "Shift 3.0 (texture, bruno rescale_t)",
       "properties": {
         "cnr_id": "comfy-core",
+        "ver": "0.38.2",
         "Node name for S&R": "ModelSamplingSD3"
       },
       "widgets_values": [
-        3.0
+        3
       ],
       "widgets_values_named": {
-        "shift": 3.0
+        "shift": 3
+      }
+    },
+    {
+      "id": 941,
+      "type": "MeshReconstructWithQuad",
+      "pos": [
+        1143.3839525085555,
+        625.3627878726481
+      ],
+      "size": [
+        320,
+        190
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "mesh",
+          "type": "MESH",
+          "link": 2770
+        }
+      ],
+      "outputs": [
+        {
+          "name": "mesh",
+          "type": "MESH",
+          "links": [
+            2771
+          ]
+        }
+      ],
+      "title": "1 \u00b7 Quad Reconstruct (clean raw mesh)",
+      "properties": {
+        "aux_id": "Mstafa-awad/ComfyUI-Mesh-Quad-Reconstruct",
+        "ver": "74048b3415537e26cc72b46b082a010cd0e357ce",
+        "Node name for S&R": "MeshReconstructWithQuad"
+      },
+      "widgets_values": [
+        1,
+        1536,
+        true,
+        true
+      ],
+      "widgets_values_named": {
+        "remesh_band": 1,
+        "resolution": 1536,
+        "remove_floaters": true,
+        "remove_inner_faces": true
+      }
+    },
+    {
+      "id": 942,
+      "type": "Trellis2CFGInterval",
+      "pos": [
+        100,
+        640
+      ],
+      "size": [
+        320,
+        140
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 2772
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            10,
+            14,
+            18
+          ]
+        }
+      ],
+      "title": "CFG 0.1-1.0 r0.2 (structure + shape)",
+      "properties": {
+        "aux_id": "ComfyUI-Trellis2-Multiview-Native",
+        "Node name for S&R": "Trellis2CFGInterval"
+      },
+      "widgets_values": [
+        0.1,
+        1.0,
+        0.2
+      ],
+      "widgets_values_named": {
+        "interval_start": 0.1,
+        "interval_end": 1.0,
+        "guidance_rescale": 0.2
+      }
+    },
+    {
+      "id": 943,
+      "type": "Trellis2CFGInterval",
+      "pos": [
+        100,
+        800
+      ],
+      "size": [
+        320,
+        140
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 2773
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            24
+          ]
+        }
+      ],
+      "title": "CFG 0.0-0.9 r0.2 (texture)",
+      "properties": {
+        "aux_id": "ComfyUI-Trellis2-Multiview-Native",
+        "Node name for S&R": "Trellis2CFGInterval"
+      },
+      "widgets_values": [
+        0.0,
+        0.9,
+        0.2
+      ],
+      "widgets_values_named": {
+        "interval_start": 0.0,
+        "interval_end": 0.9,
+        "guidance_rescale": 0.2
       }
     }
   ],
@@ -2642,7 +2785,7 @@
     ],
     [
       10,
-      939,
+      942,
       0,
       11,
       0,
@@ -2674,7 +2817,7 @@
     ],
     [
       14,
-      939,
+      942,
       0,
       14,
       0,
@@ -2706,7 +2849,7 @@
     ],
     [
       18,
-      939,
+      942,
       0,
       16,
       0,
@@ -2754,7 +2897,7 @@
     ],
     [
       24,
-      940,
+      943,
       0,
       19,
       0,
@@ -3057,14 +3200,6 @@
       "FILE_3D_GLB"
     ],
     [
-      2741,
-      17,
-      0,
-      931,
-      0,
-      "MESH"
-    ],
-    [
       2742,
       1,
       0,
@@ -3191,6 +3326,38 @@
       940,
       0,
       "MODEL"
+    ],
+    [
+      2770,
+      17,
+      0,
+      941,
+      0,
+      "MESH"
+    ],
+    [
+      2771,
+      941,
+      0,
+      931,
+      0,
+      "MESH"
+    ],
+    [
+      2772,
+      939,
+      0,
+      942,
+      0,
+      "MODEL"
+    ],
+    [
+      2773,
+      940,
+      0,
+      943,
+      0,
+      "MODEL"
     ]
   ],
   "groups": [
@@ -3212,8 +3379,8 @@
       "bounding": [
         4152,
         184,
-        1300,
-        960
+        1648.7387363147136,
+        1426.9552570993612
       ],
       "color": "#8A5CF6",
       "flags": {}
@@ -3250,8 +3417,8 @@
         "version": 1,
         "state": {
           "lastGroupId": 73,
-          "lastNodeId": 938,
-          "lastLinkId": 2767,
+          "lastNodeId": 941,
+          "lastLinkId": 2771,
           "lastRerouteId": 9
         },
         "revision": 0,
@@ -4694,7 +4861,7 @@
               "qwen_2.5_vl_7b_fp8_scaled.safetensors",
               "qwen_image_vae.safetensors",
               "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
-              169302194108690
+              638778144342862
             ],
             "widgets_values_named": {
               "prompt": "Orthographic character sheet, full body turnaround views, showing the exact same character from a front view, left side view, back view and right side view. Flat lighting, solid black background, evenly spaced, highly detailed, preserving identical appearance and features across all views\n\n",
@@ -4703,7 +4870,7 @@
               "clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
               "vae_name": "qwen_image_vae.safetensors",
               "lora_name": "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
-              "seed": 169302194108690
+              "seed": 638778144342862
             }
           },
           {
@@ -5066,7 +5233,7 @@
               1024,
               "euler",
               "simple",
-              107423470016656,
+              95013430808610,
               "qwen_image_2.1_int8_convrot.safetensors",
               "qwen3vl_8b_int8_convrot.safetensors",
               "qwen_image_2.1_vae_bf16.safetensors",
@@ -5088,7 +5255,7 @@
               "height": 1024,
               "scheduler": "euler",
               "scheduler_1": "simple",
-              "seed": 107423470016656,
+              "seed": 95013430808610,
               "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
               "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
               "vae_name": "qwen_image_2.1_vae_bf16.safetensors",
@@ -6622,30 +6789,6 @@
             "type": "IMAGE"
           },
           {
-            "id": 651,
-            "origin_id": 521,
-            "origin_slot": 0,
-            "target_id": 464,
-            "target_slot": 0,
-            "type": "STRING"
-          },
-          {
-            "id": 2335,
-            "origin_id": 736,
-            "origin_slot": 0,
-            "target_id": 464,
-            "target_slot": 9,
-            "type": "IMAGE"
-          },
-          {
-            "id": 2649,
-            "origin_id": 894,
-            "origin_slot": 0,
-            "target_id": 897,
-            "target_slot": 9,
-            "type": "IMAGE"
-          },
-          {
             "id": 2713,
             "origin_id": 896,
             "origin_slot": 0,
@@ -6684,6 +6827,30 @@
             "target_id": 916,
             "target_slot": 0,
             "type": "IMAGE"
+          },
+          {
+            "id": 651,
+            "origin_id": 521,
+            "origin_slot": 0,
+            "target_id": 464,
+            "target_slot": 0,
+            "type": "STRING"
+          },
+          {
+            "id": 2335,
+            "origin_id": 736,
+            "origin_slot": 0,
+            "target_id": 464,
+            "target_slot": 9,
+            "type": "IMAGE"
+          },
+          {
+            "id": 2649,
+            "origin_id": 894,
+            "origin_slot": 0,
+            "target_id": 897,
+            "target_slot": 9,
+            "type": "IMAGE"
           }
         ],
         "extra": {
@@ -6695,8 +6862,8 @@
         "version": 1,
         "state": {
           "lastGroupId": 73,
-          "lastNodeId": 938,
-          "lastLinkId": 2767,
+          "lastNodeId": 941,
+          "lastLinkId": 2771,
           "lastRerouteId": 9
         },
         "revision": 0,
@@ -7738,13 +7905,6 @@
                 "link": null
               },
               {
-                "localized_name": "image_6",
-                "name": "images.image_6",
-                "shape": 7,
-                "type": "IMAGE",
-                "link": 2690
-              },
-              {
                 "localized_name": "image_7",
                 "name": "images.image_7",
                 "shape": 7,
@@ -7806,6 +7966,13 @@
                 "shape": 7,
                 "type": "IMAGE",
                 "link": 714
+              },
+              {
+                "localized_name": "image_6",
+                "name": "images.image_6",
+                "shape": 7,
+                "type": "IMAGE",
+                "link": 2690
               }
             ],
             "outputs": [
@@ -8651,19 +8818,11 @@
             "type": "INT"
           },
           {
-            "id": 2690,
-            "origin_id": -10,
-            "origin_slot": 25,
-            "target_id": 917,
-            "target_slot": 7,
-            "type": "IMAGE"
-          },
-          {
             "id": 2691,
             "origin_id": -10,
             "origin_slot": 26,
             "target_id": 917,
-            "target_slot": 8,
+            "target_slot": 7,
             "type": "IMAGE"
           },
           {
@@ -8671,7 +8830,7 @@
             "origin_id": -10,
             "origin_slot": 27,
             "target_id": 917,
-            "target_slot": 9,
+            "target_slot": 8,
             "type": "IMAGE"
           },
           {
@@ -8679,7 +8838,7 @@
             "origin_id": -10,
             "origin_slot": 28,
             "target_id": 917,
-            "target_slot": 10,
+            "target_slot": 9,
             "type": "IMAGE"
           },
           {
@@ -8687,7 +8846,7 @@
             "origin_id": -10,
             "origin_slot": 29,
             "target_id": 917,
-            "target_slot": 11,
+            "target_slot": 10,
             "type": "IMAGE"
           },
           {
@@ -8695,7 +8854,7 @@
             "origin_id": -10,
             "origin_slot": 21,
             "target_id": 917,
-            "target_slot": 13,
+            "target_slot": 12,
             "type": "IMAGE"
           },
           {
@@ -8703,7 +8862,7 @@
             "origin_id": -10,
             "origin_slot": 22,
             "target_id": 917,
-            "target_slot": 14,
+            "target_slot": 13,
             "type": "IMAGE"
           },
           {
@@ -8711,13 +8870,21 @@
             "origin_id": -10,
             "origin_slot": 23,
             "target_id": 917,
-            "target_slot": 15,
+            "target_slot": 14,
             "type": "IMAGE"
           },
           {
             "id": 714,
             "origin_id": -10,
             "origin_slot": 24,
+            "target_id": 917,
+            "target_slot": 15,
+            "type": "IMAGE"
+          },
+          {
+            "id": 2690,
+            "origin_id": -10,
+            "origin_slot": 25,
             "target_id": 917,
             "target_slot": 16,
             "type": "IMAGE"
@@ -8843,20 +9010,20 @@
             "type": "INT"
           },
           {
-            "id": 902,
-            "origin_id": -10,
-            "origin_slot": 3,
-            "target_id": 500,
-            "target_slot": 8,
-            "type": "BOOLEAN"
-          },
-          {
             "id": 2147,
             "origin_id": -10,
             "origin_slot": 13,
             "target_id": 500,
             "target_slot": 7,
             "type": "INT"
+          },
+          {
+            "id": 902,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 500,
+            "target_slot": 8,
+            "type": "BOOLEAN"
           }
         ],
         "extra": {
@@ -8868,8 +9035,8 @@
         "version": 1,
         "state": {
           "lastGroupId": 73,
-          "lastNodeId": 938,
-          "lastLinkId": 2767,
+          "lastNodeId": 941,
+          "lastLinkId": 2771,
           "lastRerouteId": 9
         },
         "revision": 0,
@@ -10815,8 +10982,8 @@
         "version": 1,
         "state": {
           "lastGroupId": 73,
-          "lastNodeId": 938,
-          "lastLinkId": 2767,
+          "lastNodeId": 941,
+          "lastLinkId": 2771,
           "lastRerouteId": 9
         },
         "revision": 0,
@@ -11840,13 +12007,6 @@
                 "link": null
               },
               {
-                "localized_name": "image_8",
-                "name": "images.image_8",
-                "shape": 7,
-                "type": "IMAGE",
-                "link": 2627
-              },
-              {
                 "localized_name": "image_9",
                 "name": "images.image_9",
                 "shape": 7,
@@ -11908,6 +12068,13 @@
                 "shape": 7,
                 "type": "IMAGE",
                 "link": 2626
+              },
+              {
+                "localized_name": "image_8",
+                "name": "images.image_8",
+                "shape": 7,
+                "type": "IMAGE",
+                "link": 2627
               }
             ],
             "outputs": [
@@ -12741,19 +12908,11 @@
             "type": "INT"
           },
           {
-            "id": 2627,
-            "origin_id": -10,
-            "origin_slot": 27,
-            "target_id": 886,
-            "target_slot": 7,
-            "type": "IMAGE"
-          },
-          {
             "id": 2628,
             "origin_id": -10,
             "origin_slot": 28,
             "target_id": 886,
-            "target_slot": 8,
+            "target_slot": 7,
             "type": "IMAGE"
           },
           {
@@ -12761,7 +12920,7 @@
             "origin_id": -10,
             "origin_slot": 29,
             "target_id": 886,
-            "target_slot": 9,
+            "target_slot": 8,
             "type": "IMAGE"
           },
           {
@@ -12769,7 +12928,7 @@
             "origin_id": -10,
             "origin_slot": 21,
             "target_id": 886,
-            "target_slot": 11,
+            "target_slot": 10,
             "type": "IMAGE"
           },
           {
@@ -12777,7 +12936,7 @@
             "origin_id": -10,
             "origin_slot": 22,
             "target_id": 886,
-            "target_slot": 12,
+            "target_slot": 11,
             "type": "IMAGE"
           },
           {
@@ -12785,7 +12944,7 @@
             "origin_id": -10,
             "origin_slot": 23,
             "target_id": 886,
-            "target_slot": 13,
+            "target_slot": 12,
             "type": "IMAGE"
           },
           {
@@ -12793,7 +12952,7 @@
             "origin_id": -10,
             "origin_slot": 24,
             "target_id": 886,
-            "target_slot": 14,
+            "target_slot": 13,
             "type": "IMAGE"
           },
           {
@@ -12801,13 +12960,21 @@
             "origin_id": -10,
             "origin_slot": 25,
             "target_id": 886,
-            "target_slot": 15,
+            "target_slot": 14,
             "type": "IMAGE"
           },
           {
             "id": 2626,
             "origin_id": -10,
             "origin_slot": 26,
+            "target_id": 886,
+            "target_slot": 15,
+            "type": "IMAGE"
+          },
+          {
+            "id": 2627,
+            "origin_id": -10,
+            "origin_slot": 27,
             "target_id": 886,
             "target_slot": 16,
             "type": "IMAGE"
@@ -12933,20 +13100,20 @@
             "type": "INT"
           },
           {
-            "id": 2644,
-            "origin_id": -10,
-            "origin_slot": 3,
-            "target_id": 892,
-            "target_slot": 8,
-            "type": "BOOLEAN"
-          },
-          {
             "id": 2645,
             "origin_id": -10,
             "origin_slot": 13,
             "target_id": 892,
             "target_slot": 7,
             "type": "INT"
+          },
+          {
+            "id": 2644,
+            "origin_id": -10,
+            "origin_slot": 3,
+            "target_id": 892,
+            "target_slot": 8,
+            "type": "BOOLEAN"
           }
         ],
         "extra": {
@@ -12958,8 +13125,8 @@
         "version": 1,
         "state": {
           "lastGroupId": 73,
-          "lastNodeId": 938,
-          "lastLinkId": 2767,
+          "lastNodeId": 941,
+          "lastLinkId": 2771,
           "lastRerouteId": 9
         },
         "revision": 0,
@@ -13362,10 +13529,10 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 0.59942924668784,
+      "scale": 0.23110592354829881,
       "offset": [
-        627.9076964939916,
-        -81.54815163070587
+        1935.850341583403,
+        1428.0021975090021
       ]
     },
     "frontendVersion": "1.53.6",
