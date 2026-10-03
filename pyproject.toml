@@ -1,0 +1,10 @@
+[project]
+name = "comfyui-trellis2-multiview-native"
+version = "1.1.0"
+description = "Native-style multi-view conditioning for Trellis2, plus an in-memory MeshWithVoxel to native MESH + VOXEL bridge (full PBR color)."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["typing_extensions"]
+
+[tool.comfy]
+display_name = "ComfyUI-Trellis2-Multiview-Native"
