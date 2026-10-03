@@ -35,6 +35,14 @@ same spatial softmax (`front_axis` z/x, `blend_temperature`, default
 conditioning node, keep `use_*` switches in sync on both nodes.
 Single view = passthrough.
 
+Sharpness note: visualbruno's `rescale_t` (4.0 structure/shape,
+3.0 texture) is exactly Comfy's flow `shift`
+(`α·t/(1+(α-1)·t)`), so use core `ModelSamplingSD3` nodes for it:
+shift `4.0` between the patch and the structure/shape KSamplers,
+shift `3.0` before the texture KSampler — then 12 steps / 6.5 / 3.0
+match bruno's defaults. Without the shift nodes everything reads
+soft no matter the step count.
+
 ### Trellis2 MeshWithVoxel to Native Bridge (`MeshWithVoxelToNativeBridge`)
 
 Converts visualbruno `ComfyUI-Trellis2` MESHWITHVOXEL to native ComfyUI
