@@ -1,17 +1,15 @@
 """Trellis2 multi-view conditioning (native-style, no compiled deps).
 
-Averages DINOv3 global tokens across 1-4 views and emits the exact same
-CONDITIONING format as core `Trellis2Conditioning`, so all downstream core
-nodes (Trellis2ShapeStage / KSampler / Trellis2UpsampleStage /
-Trellis2TextureStage / VAE decodes) work unchanged.
-
-Why averaging: Trellis2 diffusion weights use global cross-attention
-(`image_attn_mode="global"`), trained single-view. There is no projection /
-camera-fusion path for Trellis2 (that is the Pixal3D route with NAF +
-transform matrices). Mean-pooling the global tokens is the architecturally
-consistent way to condition Trellis2 on several views without retraining.
-View order is irrelevant to the diffusion; the first connected view is
-treated as "front" only as a posing convention for the mesh output.
+Nodes:
+- `Trellis2MultiViewConditioning`: averages DINOv3 global tokens across
+  1-4 views; same CONDITIONING format as core `Trellis2Conditioning`.
+- `Trellis2SpatialMultiViewPatch`: native port of visualbruno's multiview
+  sampler fusion. Patches MODEL so every KSampler step runs once per view
+  and blends with spatial softmax weights (`front_axis`,
+  `blend_temperature`). This is what locks the mesh to the source pose;
+  averaging alone cannot. Pure torch, no compiled deps.
+- `MeshWithVoxelToNativeBridge` / `NativeMeshVoxelToMeshWithVoxel`:
+  in-memory MESHWITHVOXEL <-> MESH+VOXEL bridges.
 """
 
 from comfy_api.latest import ComfyExtension, IO, Types
@@ -334,10 +332,441 @@ class MeshWithVoxelToNativeBridge(IO.ComfyNode):
         return IO.NodeOutput(native_mesh, native_voxel)
 
 
+class MeshWithVoxelShim:
+    """Dependency-free MESHWITHVOXEL stand-in (Z-up, visualbruno convention).
+
+    Only carries what MeshWithVoxelToNativeBridge reads:
+    vertices [N,3], faces [M,3], coords [K,4] (batch col 0),
+    attrs [K,C], voxel_size (1/R), layout (None).
+    """
+
+    def __init__(self, vertices, faces, coords, attrs, voxel_size):
+        self.vertices = vertices
+        self.faces = faces
+        self.coords = coords
+        self.attrs = attrs
+        self.voxel_size = voxel_size
+        self.layout = None
+        self.device = vertices.device if hasattr(vertices, "device") else torch.device("cpu")
+
+
+class NativeMeshVoxelToMeshWithVoxel(IO.ComfyNode):
+    """Pack native MESH + VOXEL (Y-up) into a Z-up MESHWITHVOXEL shim.
+
+    This is the native replacement for visualbruno's
+    'Trellis2 - Mesh With Voxel Multi-View Generator' output: it produces
+    the same MESHWITHVOXEL type that BRIDGE (MeshWithVoxelToNativeBridge)
+    accepts, but from core VaeDecodeShapeTrellis (MESH) +
+    VaeDecodeTextureTrellis (VOXEL) with no cumesh / o_voxel / triton.
+
+    Chain: native VAE decodes -> this node -> BRIDGE(reorient=True) ->
+    MeshReconstructWithQuad / WTiVo / BakeTextureFromVoxel.
+    Y-up -> Z-up here is the exact inverse of the bridge's Z-up -> Y-up:
+    verts (x, y, z) -> (x, -z, y), voxels (x, y, z) -> (x, R-1-z, y).
+    """
+
+    @classmethod
+    def define_schema(cls):
+        return IO.Schema(
+            node_id="NativeMeshVoxelToMeshWithVoxel",
+            display_name="Trellis2 Native MESH+VOXEL to MeshWithVoxel",
+            category="3d/mesh/bridge",
+            description=(
+                "Packs core native MESH + VOXEL into a Z-up MESHWITHVOXEL "
+                "shim that plugs into MeshWithVoxelToNativeBridge. "
+                "Native replacement for the visualbruno generator output, "
+                "no compiled deps."
+            ),
+            inputs=[
+                IO.Mesh.Input(
+                    "mesh",
+                    tooltip="MESH from VaeDecodeShapeTrellis (Y-up, batch 1).",
+                ),
+                IO.Voxel.Input(
+                    "voxel_colors",
+                    tooltip="VOXEL from VaeDecodeTextureTrellis (Y-up).",
+                ),
+            ],
+            outputs=[
+                IO.Custom("MESHWITHVOXEL").Output(display_name="mesh"),
+            ],
+        )
+
+    @classmethod
+    def execute(cls, mesh, voxel_colors) -> IO.NodeOutput:
+        verts = mesh.vertices.detach().float().cpu()
+        faces = mesh.faces.detach().int().cpu()
+        if verts.ndim == 3:
+            if verts.shape[0] != 1:
+                raise ValueError(
+                    "NativeMeshVoxelToMeshWithVoxel: expected batch 1 MESH, "
+                    f"got {tuple(verts.shape)}"
+                )
+            verts = verts[0]
+            faces = faces[0] if faces.ndim == 3 else faces
+        if verts.ndim != 2 or verts.shape[1] != 3:
+            raise ValueError(
+                "NativeMeshVoxelToMeshWithVoxel: expected vertices [N, 3], "
+                f"got {tuple(verts.shape)}"
+            )
+        if faces.ndim != 2 or faces.shape[1] != 3:
+            raise ValueError(
+                "NativeMeshVoxelToMeshWithVoxel: expected faces [M, 3], "
+                f"got {tuple(faces.shape)}"
+            )
+
+        data = voxel_colors.data.detach().cpu()
+        feats = voxel_colors.feats.detach().float().cpu()
+        resolution = int(voxel_colors.resolution)
+        if data.numel() == 0:
+            raise ValueError(
+                "NativeMeshVoxelToMeshWithVoxel: empty VOXEL (generator ran "
+                "without texture?). Enable texture branch before packing."
+            )
+        if data.shape[1] == 4:
+            coords_yup = data[:, 1:].long()
+        else:
+            coords_yup = data.long()
+        if coords_yup.shape[1] != 3:
+            raise ValueError(
+                "NativeMeshVoxelToMeshWithVoxel: expected voxel coords [K, 3], "
+                f"got {tuple(coords_yup.shape)}"
+            )
+        if coords_yup.shape[0] != feats.shape[0]:
+            raise ValueError(
+                "NativeMeshVoxelToMeshWithVoxel: coords/attrs row mismatch: "
+                f"{tuple(coords_yup.shape)} vs {tuple(feats.shape)}"
+            )
+
+        # Y-up -> Z-up (inverse of bridge R_x(-90)).
+        verts_zup = torch.stack(
+            [verts[:, 0], -verts[:, 2], verts[:, 1]], dim=-1
+        ).contiguous()
+        coords_zup = torch.stack(
+            [
+                coords_yup[:, 0],
+                (resolution - 1) - coords_yup[:, 2],
+                coords_yup[:, 1],
+            ],
+            dim=-1,
+        ).contiguous()
+        batch_col = torch.zeros(
+            (coords_zup.shape[0], 1), dtype=torch.long
+        )
+        coords_4 = torch.cat([batch_col, coords_zup], dim=1).contiguous()
+        shim = MeshWithVoxelShim(
+            vertices=verts_zup,
+            faces=faces,
+            coords=coords_4,
+            attrs=feats.contiguous(),
+            voxel_size=1.0 / float(resolution),
+        )
+        logging.info(
+            "NativeMeshVoxelToMeshWithVoxel: MESH v%s f%s + VOXEL N=%d C=%d "
+            "R=%d -> MESHWITHVOXEL shim (Z-up).",
+            tuple(verts.shape),
+            tuple(faces.shape),
+            coords_4.shape[0],
+            feats.shape[1],
+            resolution,
+        )
+        return IO.NodeOutput(shim)
+
+
+def _mv_view_scores_sparse(coords_4, resolution, views, front_axis):
+    """Per-voxel view scores, ported from visualbruno FlowEulerMultiViewSampler.
+
+    coords_4 [N, 4] layout is [batch, z, y, x] (same argwhere layout both
+    stacks use), so col 1 is z and col 3 is x. Pure torch, no deps.
+    """
+    z = (coords_4[:, 1].float() / float(resolution)) * 2.0 - 1.0
+    x = (coords_4[:, 3].float() / float(resolution)) * 2.0 - 1.0
+    zero = torch.zeros_like(z)
+    if front_axis == "x":
+        table = {"front": (x, zero), "back": (-x, zero),
+                 "right": (zero, z), "left": (zero, -z)}
+    else:
+        table = {"front": (zero, z), "back": (zero, -z),
+                 "right": (x, zero), "left": (-x, zero)}
+    scores = []
+    for view in views:
+        if view in table:
+            a, b = table[view]
+            scores.append(a + b)
+        else:
+            scores.append(torch.full_like(z, -10.0))
+    return torch.stack(scores, dim=1)
+
+
+def _mv_view_scores_dense(shape, device, views, front_axis):
+    """Per-voxel view scores for dense [B, C, D, H, W] structure latents."""
+    D, H, W = int(shape[2]), int(shape[3]), int(shape[4])
+    dz = torch.linspace(-1.0, 1.0, D, device=device)
+    dx = torch.linspace(-1.0, 1.0, W, device=device)
+    grid_z, _, grid_x = torch.meshgrid(dz, torch.zeros(1, device=device),
+                                       dx, indexing="ij")
+    grid_z = grid_z.expand(D, H, W)
+    grid_x = grid_x.expand(D, H, W)
+    if front_axis == "x":
+        table = {"front": grid_x, "back": -grid_x,
+                 "right": grid_z, "left": -grid_z}
+    else:
+        table = {"front": grid_z, "back": -grid_z,
+                 "right": grid_x, "left": -grid_x}
+    scores = []
+    for view in views:
+        if view in table:
+            scores.append(table[view])
+        else:
+            scores.append(torch.full_like(grid_z, -10.0))
+    return torch.stack(scores, dim=0)
+
+
+class Trellis2SpatialMultiViewPatch(IO.ComfyNode):
+    """Native port of visualbruno's multiview sampler fusion (no extra deps).
+
+    Visualbruno's `Trellis2MeshWithVoxelMultiViewGenerator` does NOT average
+    views: per sampling step it runs the denoiser once per view and blends
+    the velocities with spatial softmax weights
+    (`front_axis` + `blend_temperature`, +Z front / +X right when
+    `front_axis="z"`). That voxel-space blend is what locks the mesh to the
+    source pose. Mean-pooling tokens (the conditioning node) cannot do that.
+
+    This node encodes each view's DINOv3 tokens itself and patches MODEL via
+    the supported `set_model_unet_function_wrapper` hook, so every KSampler
+    step (structure dense 16^3, shape/texture sparse) runs once per view and
+    blends with the same weights. All math is pure torch.
+
+    Chain: UNETLoader -> this node -> KSampler (x4) -> stages/decodes.
+    Keep `Trellis2MultiViewConditioning` upstream (its averaged tokens are the
+    fallback base cond). Single view connected = passthrough.
+    """
+
+    @classmethod
+    def define_schema(cls):
+        views = [
+            IO.Image.Input(
+                name,
+                optional=True,
+                tooltip=f"Square {name} view for spatial fusion.",
+            )
+            for name in _VIEW_ORDER
+        ]
+        switches = [
+            IO.Boolean.Input(f"use_{name}", default=True)
+            for name in _VIEW_ORDER
+        ]
+        return IO.Schema(
+            node_id="Trellis2SpatialMultiViewPatch",
+            display_name="Trellis2 Spatial Multi-View Patch",
+            category="model/conditioning/trellis",
+            inputs=[
+                IO.Model.Input("model"),
+                IO.ClipVision.Input("clip_vision_model"),
+            ]
+            + views
+            + switches
+            + [
+                IO.Combo.Input(
+                    "front_axis",
+                    options=["z", "x"],
+                    default="z",
+                    tooltip="Matches visualbruno front_axis: which voxel axis the front view looks down.",
+                ),
+                IO.Float.Input(
+                    "blend_temperature",
+                    default=2.0,
+                    min=0.1,
+                    max=10.0,
+                    step=0.1,
+                    tooltip="Matches visualbruno blend_temperature: higher = harder per-view regions.",
+                ),
+            ],
+            outputs=[IO.Model.Output()],
+        )
+
+    @classmethod
+    def execute(
+        cls, model, clip_vision_model, front=None, left=None, back=None,
+        right=None, use_front=True, use_left=True, use_back=True,
+        use_right=True, front_axis="z", blend_temperature=2.0,
+    ):
+        views = {"front": front, "left": left, "back": back, "right": right}
+        enabled = {"front": use_front, "left": use_left,
+                   "back": use_back, "right": use_right}
+        names = [n for n in _VIEW_ORDER
+                 if views[n] is not None and enabled.get(n, True)]
+        if not names:
+            raise ValueError(
+                "Trellis2SpatialMultiViewPatch needs at least one "
+                "connected view with its use_* switch on"
+            )
+        store_device = comfy.model_management.intermediate_device()
+        comfy.model_management.load_model_gpu(clip_vision_model.patcher)
+        batch_size = views[names[0]].shape[0]
+        tok512, tok1024 = {}, {}
+        for name in names:
+            per512, per1024 = [], []
+            for b in range(batch_size):
+                frame = views[name][b % views[name].shape[0]]
+                bchw = _to_bchw(frame)
+                per512.append(
+                    _dinov3_encode_global(clip_vision_model, bchw, 512))
+                per1024.append(
+                    _dinov3_encode_global(clip_vision_model, bchw, 1024))
+            tok512[name] = torch.cat(per512, dim=0).to(store_device)
+            tok1024[name] = torch.cat(per1024, dim=0).to(store_device)
+
+        pack = {"names": list(names), "tok512": tok512, "tok1024": tok1024,
+                "batch": int(batch_size), "axis": front_axis,
+                "temp": float(blend_temperature)}
+        patched = model.clone()
+        patched.set_model_unet_function_wrapper(
+            lambda apply_fn, params, _pack=pack: _mv_blend_apply(
+                apply_fn, params, _pack)
+        )
+        logging.info(
+            "Trellis2SpatialMultiViewPatch: %d view(s) %s axis=%s temp=%.2f.",
+            len(names), "+".join(names), front_axis, blend_temperature,
+        )
+        return IO.NodeOutput(patched)
+
+
+def _mv_blend_apply(apply_fn, params, pack):
+    """model_function_wrapper: run once per view, blend with spatial weights."""
+    try:
+        c_in = params["c"]
+        x = params["input"]
+        t = params["timestep"]
+    except KeyError:
+        return apply_fn(params["input"], params["timestep"], **params["c"])
+    names = pack["names"]
+    if len(names) <= 1:
+        return apply_fn(x, t, **c_in)
+    if "trellis2_proj_feats" in c_in:
+        return apply_fn(x, t, **c_in)
+    if "embeds" not in c_in or "c_crossattn" not in c_in:
+        return apply_fn(x, t, **c_in)
+
+    n_chunks = len(params.get("cond_or_uncond", [])) or 1
+    rows = int(x.shape[0])
+    if rows % n_chunks != 0:
+        logging.warning(
+            "Trellis2SpatialMultiViewPatch: rows %d not divisible by %d "
+            "chunks, passing through.", rows, n_chunks)
+        return apply_fn(x, t, **c_in)
+    rpc = rows // n_chunks
+
+    cross = c_in["c_crossattn"]
+    embeds = c_in["embeds"]
+    closure_batch = pack["batch"]
+    if closure_batch != rpc and closure_batch != 1:
+        logging.warning(
+            "Trellis2SpatialMultiViewPatch: encoded batch %d != runtime "
+            "batch %d, passing through.", closure_batch, rpc)
+        return apply_fn(x, t, **c_in)
+
+    chunk_rows = int(cross.shape[0]) // n_chunks
+    try:
+        neg_chunk = [
+            bool((cross[o * chunk_rows:(o + 1) * chunk_rows].float()
+                  .abs().max().item()) < 1e-6)
+            for o in range(n_chunks)
+        ]
+    except Exception:
+        return apply_fn(x, t, **c_in)
+
+    def _fit(tok):
+        tok = tok.to(device=cross.device, dtype=cross.dtype)
+        if tok.shape[0] == rpc:
+            return tok
+        return tok[:1].expand(rpc, *tok.shape[1:])
+
+    try:
+        outs = []
+        for name in names:
+            c_view = dict(c_in)
+            t512 = _fit(pack["tok512"][name])
+            t1024 = _fit(pack["tok1024"][name])
+            cross_v = cross.clone()
+            embeds_v = (embeds.clone() if torch.is_tensor(embeds)
+                        else embeds)
+            for o in range(n_chunks):
+                if neg_chunk[o]:
+                    continue
+                s = slice(o * chunk_rows, (o + 1) * chunk_rows)
+                cross_v[s] = t512[: cross_v[s].shape[0]]
+                if torch.is_tensor(embeds_v):
+                    embeds_v[s] = t1024[: embeds_v[s].shape[0]]
+            c_view["c_crossattn"] = cross_v
+            c_view["embeds"] = embeds_v
+            outs.append(apply_fn(x, t, **c_view))
+    except Exception as exc:
+        logging.warning(
+            "Trellis2SpatialMultiViewPatch: per-view pass failed (%s), "
+            "passing through.", exc)
+        return apply_fn(x, t, **c_in)
+
+    coords = c_in.get("trellis2_coords", None)
+    try:
+        if coords is not None and torch.is_tensor(coords) and coords.numel():
+            return _mv_blend_sparse(outs, coords,
+                                    c_in.get("trellis2_coord_counts", None),
+                                    names, pack["axis"], pack["temp"])
+        return _mv_blend_dense(outs, x.shape, names, pack["axis"],
+                               pack["temp"])
+    except Exception as exc:
+        logging.warning(
+            "Trellis2SpatialMultiViewPatch: blend failed (%s), using "
+            "first-view output.", exc)
+        return outs[0]
+
+
+def _mv_blend_sparse(outs, coords, counts, views, axis, temp):
+    ref = outs[0]
+    b = int(ref.shape[0])
+    tmax = int(ref.shape[2])
+    extra = ref.shape[3:]
+    res = int(coords[:, 1:].float().max().item()) + 1
+    scores = _mv_view_scores_sparse(coords.long().cpu(), res, views, axis)
+    weights = torch.softmax(scores * float(temp), dim=1).to(
+        device=ref.device, dtype=torch.float32)
+    if counts is not None and torch.is_tensor(counts) and counts.numel():
+        counts_list = [int(v) for v in counts.tolist()]
+    else:
+        counts_list = [coords.shape[0]]
+    lb = len(counts_list)
+    v = len(views)
+    wmap = torch.zeros((b, tmax, v), dtype=torch.float32)
+    wmap[..., 0] = 1.0
+    for bi in range(b):
+        i = bi % lb
+        n = min(counts_list[i], tmax)
+        off = int(sum(counts_list[:i]))
+        wmap[bi, :n] = weights[off: off + n]
+    w = (wmap.permute(2, 0, 1).unsqueeze(2).unsqueeze(-1)
+         .to(device=ref.device, dtype=ref.dtype))
+    stacked = torch.stack(
+        [o.reshape(b, o.shape[1], tmax, -1).to(ref.dtype) for o in outs],
+        dim=0)
+    blended = (stacked * w).sum(dim=0)
+    return blended.reshape((b, ref.shape[1], tmax) + tuple(extra))
+
+
+def _mv_blend_dense(outs, shape, views, axis, temp):
+    ref = outs[0]
+    b = int(ref.shape[0])
+    scores = _mv_view_scores_dense(ref.shape, ref.device, views, axis)
+    w = torch.softmax(scores * float(temp), dim=0).to(dtype=ref.dtype)
+    stacked = torch.stack([o.to(ref.dtype) for o in outs], dim=0)
+    w = w.view(len(views), *([1] * (stacked.ndim - 5)), *ref.shape[2:])
+    return (stacked * w.unsqueeze(1)).sum(dim=0)
+
+
 class Trellis2MultiviewExtension(ComfyExtension):
     @override
     async def get_node_list(self) -> list[type[IO.ComfyNode]]:
-        return [Trellis2MultiViewConditioning, MeshWithVoxelToNativeBridge]
+        return [Trellis2MultiViewConditioning, MeshWithVoxelToNativeBridge, NativeMeshVoxelToMeshWithVoxel, Trellis2SpatialMultiViewPatch]
 
 
 async def comfy_entrypoint() -> Trellis2MultiviewExtension:

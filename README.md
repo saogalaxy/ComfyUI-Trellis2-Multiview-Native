@@ -20,7 +20,20 @@ mean-pooling the global tokens is the architecturally consistent way to
 condition on several views without retraining. View order is irrelevant to
 the diffusion; the first connected view is treated as "front" only as a
 posing convention. Each view has a `use_*` switch to skip a wired view
-without disconnecting it.
+without disconnecting it. 2 views (front + back) work well and sample
+~2x faster than 4; 1 view passes through as plain averaging.
+
+### Trellis2 Spatial Multi-View Patch (`Trellis2SpatialMultiViewPatch`)
+
+Native port of visualbruno's multiview sampler fusion — this is what
+locks the mesh to the source pose. It encodes each view's DINOv3 tokens
+itself and patches MODEL (supported `set_model_unet_function_wrapper`
+hook), so every KSampler step runs once per view and blends with the
+same spatial softmax (`front_axis` z/x, `blend_temperature`, default
+`z` / `2.0`). Pure torch, no compiled deps. Wire:
+`UNETLoader -> patch -> KSamplers`, same 4 views + CLIP Vision as the
+conditioning node, keep `use_*` switches in sync on both nodes.
+Single view = passthrough.
 
 ### Trellis2 MeshWithVoxel to Native Bridge (`MeshWithVoxelToNativeBridge`)
 
@@ -53,6 +66,11 @@ ComfyUI-Manager: install from Git URL
   VAE decodes -> PaintMesh -> GLB.
   Needs: `trellis_2_int8_convrot`, shape/texture VAEs,
   `dino_v3_L_naf_fp32`. Restart ComfyUI after installing.
+- `trellis2_multiview_spatial_workflow.json` — same chain plus the
+  Spatial Multi-View Patch between UNETLoader and the KSamplers
+  (pose-locked, 1024_cascade). Tip: keep Quad Reconstruct bypassed
+  until pose holds — at 1536 + `remove_inner_faces` it can hollow
+  thin cloth and read as see-through.
 - Bridged PixelArtistry chain (separate file): Trellis2 multiview
   generator -> Remesh -> Simplify -> FillHoles ->
   **MeshWithVoxelToNativeBridge** -> Quad Reconstruct -> MemoryCleaner ->
