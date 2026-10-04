@@ -350,7 +350,7 @@
           ]
         }
       ],
-      "title": "KSampler structure (ss_steps 12 / cfg 6.5)",
+      "title": "KSampler structure (20 / 7.5 | bruno 12 / 6.5)",
       "properties": {
         "cnr_id": "comfy-core",
         "ver": "0.38.2",
@@ -530,7 +530,7 @@
           ]
         }
       ],
-      "title": "KSampler shape 512 (shape 12 / 6.5)",
+      "title": "KSampler shape 512 (20 / 7.5 | bruno 12 / 6.5)",
       "properties": {
         "cnr_id": "comfy-core",
         "ver": "0.38.2",
@@ -616,7 +616,7 @@
           ]
         }
       ],
-      "title": "Upsample (1024_cascade)",
+      "title": "Upsample -> 1536 (bruno 1024_cascade)",
       "properties": {
         "cnr_id": "comfy-core",
         "ver": "0.38.2",
@@ -675,7 +675,7 @@
           ]
         }
       ],
-      "title": "KSampler shape 1024 (12 / 6.5)",
+      "title": "KSampler shape 1536 (20 / 7.5 | bruno 12 / 6.5)",
       "properties": {
         "cnr_id": "comfy-core",
         "ver": "0.38.2",
@@ -944,10 +944,10 @@
       "title": "NATIVE mapping (read me)",
       "properties": {},
       "widgets_values": [
-        "ALL-NATIVE version of Flow test BRIDGED (1024_cascade, seed 1416844674).\nReplaces: Trellis2LoadModel(39) -> UNET+2xVAE+CLIPVision. Generator(116) -> nodes 9-20 (ss 12/6.5, shape 12/6.5, tex 12/3.0, euler).\nDropped visualbruno-only: front_axis z, blend_temperature 2, rescale/rescale_t/interval, dino_lock 0/substeps 4/cap 1, fill_holes flood_fill iter 1, keep_only_shell, max_tokens, BVH, RemeshWithQuad(103)/Simplify(117)/FillHoles(118)/ToTrimesh(120)/ExportMesh(119) -> covered by Quad+WTiVo+LODTailor below.\nMESH (17) -> Quad Reconstruct. VOXEL (20) -> Bake. No Bridge needed (native outputs already Y-up). Multiview subgraph 923 replaced by LoadImage 5-8; reconnect your Qwen views here."
+        "ALL-NATIVE version of Flow test BRIDGED (seed 1416844674).\nReplaces: Trellis2LoadModel(39) -> UNET(1) + 2xVAE(3,4) + CLIPVision(2). Generator(116) -> nodes 9-20.\nEXACT bruno parity: texture 12/3.0 | rescale_t 4/4/3 -> ModelSamplingSD3 (939 shift 4, 940 shift 3) | guidance interval + rescale 0.2 -> Trellis2CFGInterval (942 = 0.1-1.0, 943 = 0.0-0.9) | front_axis z + blend_temperature 2 -> node 933.\nTUNED, NOT bruno DEFAULT: structure + both shape samplers are 20 steps / cfg 7.5 (bruno 12 / 6.5) | upsample target 1536 (bruno 1024_cascade) | only front+back views enabled (bruno feeds all 4) | UNET = trellis_2_int8_convrot (bruno loads microsoft/TRELLIS.2-4B). Set 12 / 6.5 and 1024 for strict parity.\nNOT reproduced (lived inside bruno node 116): tiled decoder, fill_holes flood_fill x1, keep_only_shell, max_num_tokens. Skipped bruno pre-simplify: RemeshWithQuad(103) -> SimplifyMesh(500k Cumesh)(117) -> FillHoles(118) -> ToTrimesh(120).\nIDENTICAL to bruno: MeshReconstructWithQuad [1|1536|T|T], WTiVo [1536|1536|12M|1|1.5|20|16|0|largest], LODTailor, Unwrap pec 1536, Bake 4096.\nMESH (17) -> Quad Reconstruct. VOXEL (20) -> Bake. No Bridge needed (native outputs are already Y-up). Node 941 is a duplicate Quad feeding only the node 932 preview, so node 932 is NOT a raw pre-Quad mesh."
       ],
       "widgets_values_named": {
-        "text": "ALL-NATIVE version of Flow test BRIDGED (1024_cascade, seed 1416844674).\nReplaces: Trellis2LoadModel(39) -> UNET+2xVAE+CLIPVision. Generator(116) -> nodes 9-20 (ss 12/6.5, shape 12/6.5, tex 12/3.0, euler).\nDropped visualbruno-only: front_axis z, blend_temperature 2, rescale/rescale_t/interval, dino_lock 0/substeps 4/cap 1, fill_holes flood_fill iter 1, keep_only_shell, max_tokens, BVH, RemeshWithQuad(103)/Simplify(117)/FillHoles(118)/ToTrimesh(120)/ExportMesh(119) -> covered by Quad+WTiVo+LODTailor below.\nMESH (17) -> Quad Reconstruct. VOXEL (20) -> Bake. No Bridge needed (native outputs already Y-up). Multiview subgraph 923 replaced by LoadImage 5-8; reconnect your Qwen views here."
+        "text": "ALL-NATIVE version of Flow test BRIDGED (seed 1416844674).\nReplaces: Trellis2LoadModel(39) -> UNET(1) + 2xVAE(3,4) + CLIPVision(2). Generator(116) -> nodes 9-20.\nEXACT bruno parity: texture 12/3.0 | rescale_t 4/4/3 -> ModelSamplingSD3 (939 shift 4, 940 shift 3) | guidance interval + rescale 0.2 -> Trellis2CFGInterval (942 = 0.1-1.0, 943 = 0.0-0.9) | front_axis z + blend_temperature 2 -> node 933.\nTUNED, NOT bruno DEFAULT: structure + both shape samplers are 20 steps / cfg 7.5 (bruno 12 / 6.5) | upsample target 1536 (bruno 1024_cascade) | only front+back views enabled (bruno feeds all 4) | UNET = trellis_2_int8_convrot (bruno loads microsoft/TRELLIS.2-4B). Set 12 / 6.5 and 1024 for strict parity.\nNOT reproduced (lived inside bruno node 116): tiled decoder, fill_holes flood_fill x1, keep_only_shell, max_num_tokens. Skipped bruno pre-simplify: RemeshWithQuad(103) -> SimplifyMesh(500k Cumesh)(117) -> FillHoles(118) -> ToTrimesh(120).\nIDENTICAL to bruno: MeshReconstructWithQuad [1|1536|T|T], WTiVo [1536|1536|12M|1|1.5|20|16|0|largest], LODTailor, Unwrap pec 1536, Bake 4096.\nMESH (17) -> Quad Reconstruct. VOXEL (20) -> Bake. No Bridge needed (native outputs are already Y-up). Node 941 is a duplicate Quad feeding only the node 932 preview, so node 932 is NOT a raw pre-Quad mesh."
       },
       "color": "#432",
       "bgcolor": "#653"
